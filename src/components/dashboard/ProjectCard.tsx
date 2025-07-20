@@ -105,11 +105,11 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-glass backdrop-blur-glass border-glass">
-              <DropdownMenuItem onClick={() => navigate(`/builder/${project.id}`)}>
+              <DropdownMenuItem onClick={() => navigate(`/projects/${project.id}`)}>
                 <ExternalLink className="mr-2 h-4 w-4" />
                 Open
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate(`/builder/${project.id}`)}>
+              <DropdownMenuItem onClick={() => navigate(`/projects/${project.id}`)}>
                 <Edit3 className="mr-2 h-4 w-4" />
                 Edit
               </DropdownMenuItem>
@@ -166,7 +166,7 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
             variant="hero" 
             size="sm" 
             className="flex-1"
-            onClick={() => navigate(`/builder/${project.id}`)}
+            onClick={() => navigate(`/projects/${project.id}`)}
           >
             <Edit3 className="w-3 h-3 mr-1" />
             Edit

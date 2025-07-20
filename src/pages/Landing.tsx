@@ -5,8 +5,25 @@ import { Pricing } from "@/components/landing/Pricing";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, CheckCircle, Star, Users, Zap } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 export const Landing = () => {
+  const navigate = useNavigate();
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+  
+    useEffect(() => {
+      const token = localStorage.getItem("token");
+      setIsLoggedIn(!!token);
+    }, []);
+  
+    const handleClick = () => {
+      if (!isLoggedIn) {
+        navigate("/auth");
+      } else {
+        navigate("/dashboard");
+      }
+    };
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -15,50 +32,48 @@ export const Landing = () => {
       
       {/* Templates Section */}
       <section className="py-24">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold mb-6">
-              Get Started with 
-              <span className="bg-gradient-primary bg-clip-text text-transparent"> Ready-Made Templates</span>
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Choose from professionally designed templates and customize them to fit your needs.
-            </p>
-          </div>
+  <div className="container mx-auto px-4">
+    <div className="text-center mb-16">
+      <h2 className="text-3xl md:text-5xl font-bold mb-6">
+        Get Started with
+        <span className="bg-gradient-primary bg-clip-text text-transparent"> Ready-Made Templates</span>
+      </h2>
+      <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+        Choose from professionally designed templates and customize them to fit your needs.
+      </p>
+    </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              { name: "CRM Dashboard", type: "Customer Management", preview: "crm-preview.jpg" },
-              { name: "Project Tracker", type: "Team Collaboration", preview: "project-preview.jpg" },
-              { name: "E-commerce Admin", type: "Online Store", preview: "ecommerce-preview.jpg" },
-              { name: "Analytics Dashboard", type: "Data Visualization", preview: "analytics-preview.jpg" },
-              { name: "Task Manager", type: "Productivity", preview: "task-preview.jpg" },
-              { name: "Invoice Generator", type: "Business Tools", preview: "invoice-preview.jpg" }
-            ].map((template, index) => (
-              <Card key={template.name} className="group bg-glass backdrop-blur-glass border-glass hover:shadow-glow transition-all duration-300 hover:scale-105">
-                <div className="aspect-video bg-gradient-secondary rounded-t-lg relative overflow-hidden">
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary-glow/10">
-                    <div className="text-center">
-                      <div className="w-16 h-16 bg-primary/20 rounded-lg mx-auto mb-2 flex items-center justify-center">
-                        <Zap className="w-8 h-8 text-primary" />
-                      </div>
-                      <p className="text-sm text-muted-foreground">{template.type}</p>
-                    </div>
-                  </div>
-                </div>
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold mb-2">{template.name}</h3>
-                  <p className="text-muted-foreground text-sm mb-4">{template.type}</p>
-                  <Button variant="hero" className="w-full group">
-                    Use Template
-                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {[
+        { name: "CRM Dashboard", type: "Customer Management", preview: "crm_landing.png" },
+        { name: "Project Tracker", type: "Team Collaboration", preview: "project_tracker.png" },
+        { name: "E-commerce Admin", type: "Online Store", preview: "ecom.png" },
+        { name: "Analytics Dashboard", type: "Data Visualization", preview: "analytics.png" },
+        { name: "Task Manager", type: "Productivity", preview: "taskmanger.png" },
+        { name: "Invoice Generator", type: "Business Tools", preview: "invoice.png" }
+      ].map((template, index) => (
+        <Card key={template.name} className="group bg-glass backdrop-blur-glass border-glass hover:shadow-glow transition-all duration-300 hover:scale-105">
+          <div className="aspect-video rounded-t-lg relative overflow-hidden">
+            <img
+              src={template.preview}
+              alt={`${template.name} preview`}
+              className="w-full h-full object-cover"
+            />
           </div>
-        </div>
-      </section>
+          <CardContent className="p-6">
+            <h3 className="text-lg font-semibold mb-2">{template.name}</h3>
+            <p className="text-muted-foreground text-sm mb-4">{template.type}</p>
+            <Button variant="hero" className="w-full group" onClick={handleClick}>
+              Use Template
+              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  </div>
+</section>
+
 
       {/* Testimonials */}
       <section className="py-24 bg-gradient-secondary">

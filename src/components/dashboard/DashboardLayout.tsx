@@ -106,13 +106,12 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background dark:bg-[#101014]">
-        <Sidebar className="border-r border-glass dark:border-[#23232a] bg-glass dark:bg-[#18181c]">
-          <img src="/logo.png" alt="Buildify Logo" className="w-13 h-13 object-contain" />
-              
-          <SidebarHeader className="p-5">
+      <div className="min-h-screen flex w-full bg-background">
+        <Sidebar className="border-r border-glass">
+          <SidebarHeader className="p-4">
             <div className="flex items-center gap-3">
-              <span className="text-xl font-bold text-center text-foreground dark:text-white">Buildify</span>
+              <img src="/logo.png" alt="Buildify Logo" className="w-8 h-8 object-contain" />
+              <span className="text-xl font-bold">Buildify</span>
             </div>
           </SidebarHeader>
           
@@ -125,8 +124,8 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                       to={item.url} 
                       className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
                         location.pathname === item.url 
-                          ? 'bg-primary text-primary-foreground dark:bg-[#2d2d3a] dark:text-white' 
-                          : 'hover:bg-accent dark:hover:bg-[#23232a]'
+                          ? 'bg-primary text-primary-foreground' 
+                          : 'hover:bg-accent'
                       }`}
                     >
                       <item.icon className="w-5 h-5" />
@@ -148,21 +147,21 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
         <div className="flex-1 flex flex-col">
           {/* Top Navigation */}
-          <header className="h-16 border-b border-glass dark:border-[#23232a] bg-glass dark:bg-[#18181c] backdrop-blur-glass flex items-center justify-between px-6">
+          <header className="h-16 border-b border-glass bg-glass backdrop-blur-glass flex items-center justify-between px-6">
             <div className="flex items-center gap-4">
               <SidebarTrigger />
               <div className="relative w-96">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground dark:text-[#8888a0] w-4 h-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 <Input 
                   placeholder="Search projects, templates, or docs..." 
-                  className="pl-10 bg-glass border-glass dark:bg-[#23232a] dark:border-[#23232a] text-foreground dark:text-white"
+                  className="pl-10 bg-glass border-glass"
                 />
               </div>
             </div>
 
             <div className="flex items-center gap-4">
               <Button variant="ghost" size="icon">
-                <Bell className="w-5 h-5 text-foreground dark:text-white" />
+                <Bell className="w-5 h-5" />
               </Button>
 
               <DropdownMenu>
@@ -176,13 +175,13 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56 bg-glass dark:bg-[#23232a] backdrop-blur-glass border-glass dark:border-[#23232a]" align="end">
-                  <DropdownMenuLabel className="font-normal text-foreground dark:text-white">
+                <DropdownMenuContent className="w-56 bg-glass backdrop-blur-glass border-glass" align="end">
+                  <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">
                         {userProfile?.full_name || 'User'}
                       </p>
-                      <p className="text-xs leading-none text-muted-foreground dark:text-[#8888a0]">
+                      <p className="text-xs leading-none text-muted-foreground">
                         {user?.email}
                       </p>
                     </div>
@@ -207,7 +206,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           </header>
 
           {/* Main Content */}
-          <main className="flex-1 p-6 bg-background dark:bg-[#101014] text-foreground dark:text-white">
+          <main className="flex-1 p-6">
             {children}
           </main>
         </div>

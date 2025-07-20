@@ -14,6 +14,7 @@ import {
 import { useProjects } from "@/hooks/useProjects";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 import { awesomeTemplates, templateCategories, type Template } from "./AwesomeTemplates";
 
 interface ProjectCreationModalProps {
@@ -32,6 +33,7 @@ export const ProjectCreationModal = ({ open, onOpenChange }: ProjectCreationModa
   const { createProject } = useProjects();
   const { toast } = useToast();
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const filteredTemplates = awesomeTemplates.filter(template => 
     activeCategory === 'All' || template.category === activeCategory
@@ -91,6 +93,9 @@ export const ProjectCreationModal = ({ open, onOpenChange }: ProjectCreationModa
 
       onOpenChange(false);
       resetForm();
+      
+      // Navigate to the project builder
+      navigate(`/projects/${result.id}`);
     } catch (error) {
       console.error('=== PROJECT CREATION ERROR ===');
       console.error('Full error:', error);

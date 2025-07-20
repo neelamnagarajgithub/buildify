@@ -1,14 +1,34 @@
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { ArrowRight, Sparkles, Zap } from "lucide-react";
 
 export const Hero = () => {
+  const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, []);
+
+  const handleClick = () => {
+    if (!isLoggedIn) {
+      navigate("/auth");
+    } else {
+      navigate("/dashboard");
+    }
+  };
+  const handlewatchClick = () => {
+    window.open("https://www.youtube.com/watch?v=Q77OWHg8fq0", "_blank");
+  };
   return (
     <section className="relative min-h-screen flex items-center justify-center bg-gradient-hero overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:50px_50px]" />
       <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-pulse" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary-glow/10 rounded-full blur-3xl animate-pulse delay-700" />
-      
+
       <div className="relative z-10 container mx-auto px-4 text-center">
         {/* Badge */}
         <div className="inline-flex items-center gap-2 bg-glass backdrop-blur-glass border border-glass rounded-full px-4 py-2 mb-8 animate-fade-in">
@@ -25,18 +45,18 @@ export const Hero = () => {
 
         {/* Subtitle */}
         <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto animate-fade-in delay-300">
-          Create custom CRMs, dashboards, and business tools with our intuitive drag-and-drop builder. 
+          Create custom CRMs, dashboards, and business tools with our intuitive drag-and-drop builder.
           No coding skills needed.
         </p>
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12 animate-fade-in delay-500">
-          <Button variant="hero" size="xl" className="group">
+          <Button variant="hero" size="xl" className="group"  onClick={handleClick}>
             Start Building Free
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </Button>
-          
-          <Button variant="glass" size="xl">
+
+          <Button variant="glass" size="xl" onClick={handlewatchClick}>
             <Zap className="w-5 h-5" />
             Watch Demo
           </Button>

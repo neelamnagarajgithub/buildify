@@ -1,66 +1,178 @@
-import { ComponentPalette } from "@/components/builder/ComponentPalette";
-import { CanvasArea } from "@/components/builder/CanvasArea";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
+import { useProjects } from '@/hooks/useProjects';
+import { ComponentPalette } from '@/components/builder/ComponentPalette';
+import { CanvasArea } from '@/components/builder/CanvasArea';
+import { PublishDialog } from '@/components/builder/PublishDialog';
+import { TeamInviteDialog } from '@/components/builder/TeamInviteDialog';
 import { 
-  Play, 
   Save, 
-  Share, 
-  Settings, 
   Eye, 
-  Code,
-  Smartphone,
-  Tablet,
+  Globe, 
+  Settings, 
+  Undo, 
+  Redo,
   Monitor,
-  Undo,
-  Redo
-} from "lucide-react";
-import { useState } from "react";
+  Tablet,
+  Smartphone,
+  Share2,
+  Users,
+  BarChart3,
+  ArrowLeft,
+  Loader2,
+  Code
+} from 'lucide-react';
 
-export const Builder = () => {
+export const Builder = (): JSX.Element => {
+  const { projectId } = useParams();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { projects, loading: projectsLoading, updateProject } = useProjects();
+  
   const [previewMode, setPreviewMode] = useState(false);
   const [deviceView, setDeviceView] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
+  const [showPublishDialog, setShowPublishDialog] = useState(false);
+  const [showTeamInviteDialog, setShowTeamInviteDialog] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const getDeviceWidth = () => {
+  const currentProject = projectId ? projects.find(p => p.id === projectId) : null;
+
+  useEffect(() => {
+    if (!projectsLoading && projectId && !currentProject) {
+      toast({
+        title: "Project not found",
+        description: "The project you're looking for doesn't exist or you don't have access to it.",
+        variant: "destructive"
+      });
+      navigate('/projects');
+    }
+  }, [projectId, currentProject, projectsLoading, navigate, toast]);
+
+  // Get appropriate device width class
+  const getDeviceWidth = (): string => {
     switch (deviceView) {
-      case 'mobile': return 'max-w-sm';
-      case 'tablet': return 'max-w-2xl';
-      default: return 'max-w-none';
+      case 'mobile': return 'max-w-sm mx-auto';
+      case 'tablet': return 'max-w-2xl mx-auto';
+      case 'desktop': return 'w-full';
+      default: return 'w-full';
     }
   };
+
+  const handleSave = async () => {
+    if (!currentProject) return;
+    
+    try {
+      setIsSaving(true);
+      await updateProject(currentProject.id, {
+        updated_at: new Date().toISOString()
+      });
+      toast({
+        title: "Project saved",
+        description: "Your changes have been saved successfully."
+      });
+    } catch (error) {
+      toast({
+        title: "Failed to save",
+        description: "There was an error saving your project. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handlePublish = async () => {
+    if (!currentProject) return;
+    
+    try {
+      await updateProject(currentProject.id, {
+        status: 'Published' as const,
+        updated_at: new Date().toISOString()
+      });
+      toast({
+        title: "Project published",
+        description: "Your project is now live and accessible to users."
+      });
+      setShowPublishDialog(false);
+    } catch (error) {
+      toast({
+        title: "Failed to publish",
+        description: "There was an error publishing your project. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  if (projectsLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Loader2 className="w-8 h-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!currentProject) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-2">Project not found</h2>
+          <p className="text-muted-foreground mb-4">The project you're looking for doesn't exist.</p>
+          <Button onClick={() => navigate('/projects')}>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Projects
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen bg-background flex flex-col">
       {/* Top Toolbar */}
       <div className="h-16 border-b border-glass bg-glass backdrop-blur-glass flex items-center justify-between px-6">
         <div className="flex items-center gap-4">
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={() => navigate('/projects')}
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back
+          </Button>
+          
+          <div className="h-6 w-px bg-border" />
+          
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
               <Code className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="font-semibold">Customer CRM</h1>
+              <h1 className="font-semibold">{currentProject.name}</h1>
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className="text-xs">
-                  Draft
+                  {currentProject.status}
                 </Badge>
-                <span className="text-xs text-muted-foreground">Last saved 2 min ago</span>
+                <span className="text-xs text-muted-foreground">
+                  {currentProject.type}
+                </span>
               </div>
             </div>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon">
+              <Undo className="w-4 h-4" />
+            </Button>
+            <Button variant="ghost" size="icon">
+              <Redo className="w-4 h-4" />
+            </Button>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          {/* History Controls */}
-          <div className="flex items-center border border-glass rounded-lg bg-glass">
-            <Button variant="ghost" size="icon" className="rounded-r-none">
-              <Undo className="w-4 h-4" />
-            </Button>
-            <Button variant="ghost" size="icon" className="rounded-l-none">
-              <Redo className="w-4 h-4" />
-            </Button>
-          </div>
-
           {/* Device View Controls */}
           <div className="flex items-center border border-glass rounded-lg bg-glass">
             <Button
@@ -90,8 +202,12 @@ export const Builder = () => {
           </div>
 
           {/* Action Buttons */}
-          <Button variant="glass">
-            <Save className="w-4 h-4 mr-2" />
+          <Button 
+            variant="glass"
+            onClick={handleSave}
+            disabled={isSaving}
+          >
+            {isSaving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
             Save
           </Button>
           
@@ -103,9 +219,30 @@ export const Builder = () => {
             {previewMode ? 'Exit Preview' : 'Preview'}
           </Button>
 
-          <Button variant="hero">
-            <Play className="w-4 h-4 mr-2" />
+          <Button 
+            variant="hero"
+            onClick={() => setShowPublishDialog(true)}
+          >
+            <Globe className="w-4 h-4 mr-2" />
             Publish
+          </Button>
+
+          <Button 
+            variant="glass" 
+            size="sm"
+            onClick={() => setShowTeamInviteDialog(true)}
+          >
+            <Users className="w-4 h-4 mr-2" />
+            Team
+          </Button>
+          
+          <Button 
+            variant="glass" 
+            size="sm"
+            onClick={() => navigate('/analytics')}
+          >
+            <BarChart3 className="w-4 h-4 mr-2" />
+            Stats
           </Button>
 
           <Button variant="glass" size="icon">
@@ -145,12 +282,14 @@ export const Builder = () => {
               <span>•</span>
               <span>Pages: 1</span>
               <span>•</span>
-              <span>Last auto-save: 2 min ago</span>
+              <Badge variant="outline" className={currentProject.status === 'Published' ? 'text-green-600' : 'text-yellow-600'}>
+                {currentProject.status}
+              </Badge>
             </div>
 
             <div className="flex items-center gap-2">
               <Button variant="glass" size="sm">
-                <Share className="w-3 h-3 mr-2" />
+                <Share2 className="w-3 h-3 mr-2" />
                 Share
               </Button>
               <div className="text-xs text-muted-foreground">
@@ -179,6 +318,20 @@ export const Builder = () => {
           </div>
         )}
       </div>
+
+      {/* Dialogs */}
+      <PublishDialog 
+        open={showPublishDialog}
+        onOpenChange={setShowPublishDialog}
+        onPublish={handlePublish}
+        project={currentProject}
+      />
+      
+      <TeamInviteDialog 
+        open={showTeamInviteDialog}
+        onOpenChange={setShowTeamInviteDialog}
+        project={currentProject}
+      />
     </div>
   );
 };
